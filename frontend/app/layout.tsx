@@ -8,6 +8,11 @@ import { Nav } from '@/components/Nav';
 export const metadata: Metadata = {
   title: 'KOVA Protocol',
   description: 'Native intent & solver settlement layer for Sui',
+  openGraph: {
+    title: 'KOVA Protocol',
+    description: 'Native intent & solver settlement layer for Sui',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

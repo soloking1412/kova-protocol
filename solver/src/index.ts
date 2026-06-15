@@ -1,3 +1,4 @@
+import { createServer } from 'node:http';
 import type { IntentCreatedEvent } from '@kova/sdk';
 import { config, solverAddress } from './config';
 import { watchIntents } from './watcher';
@@ -9,6 +10,12 @@ import { logFill } from './walrus-logger';
 const PROTOCOL_FEE_BPS = 5n;
 const USER_SURPLUS_BPS = 5_000n;
 const processing = new Set<string>();
+
+// Live status, surfaced over HTTP so a host (and uptime pingers) can keep the
+// long-running solver awake and judges can see it filling.
+const startedAt = Date.now();
+let fills = 0;
+let lastFill: { intentId: string; txDigest: string; at: number } | null = null;
 
 async function handleIntent(intent: IntentCreatedEvent): Promise<void> {
   if (processing.has(intent.intentId)) return;
@@ -48,6 +55,8 @@ async function handleIntent(intent: IntentCreatedEvent): Promise<void> {
     console.log(`  filling via ${quote.route.poolKey} (${quote.route.direction}), est ${quote.estimatedOutput}`);
     const txDigest = await executeIntent(intent, quote);
     console.log(`  filled | tx ${txDigest}`);
+    fills += 1;
+    lastFill = { intentId: intent.intentId, txDigest, at: Date.now() };
 
     const blobId = await logFill({
       intentId: intent.intentId,
@@ -73,11 +82,32 @@ function short(type: string): string {
   return parts[parts.length - 1] ?? type;
 }
 
+// Bind an HTTP port so the solver can run on a free web host (e.g. Render),
+// which requires a listening port and pings it to keep the instance awake.
+function startHealthServer(): void {
+  const port = Number(process.env.PORT ?? 8080);
+  createServer((_req, res) => {
+    res.writeHead(200, { 'content-type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        status: 'online',
+        address: solverAddress,
+        network: config.network,
+        package: config.packageId,
+        uptimeSec: Math.floor((Date.now() - startedAt) / 1000),
+        fills,
+        lastFill,
+      }),
+    );
+  }).listen(port, () => console.log(`  health server on :${port}`));
+}
+
 async function main(): Promise<void> {
   console.log(`KOVA solver online`);
   console.log(`  address: ${solverAddress}`);
   console.log(`  package: ${config.packageId}`);
   console.log(`  network: ${config.network}`);
+  startHealthServer();
   await watchIntents(handleIntent);
 }
 
