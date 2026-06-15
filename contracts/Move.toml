@@ -1,0 +1,13 @@
+[package]
+name = "kova"
+edition = "2024.beta"
+license = "MIT"
+
+# The Sui CLI resolves the framework (Sui, MoveStdlib) bundled with the
+# installed binary, so no explicit Sui git dependency is pinned here. KOVA's
+# contracts are venue-agnostic and have no DeepBook Move dependency — routing
+# happens in the solver's PTB against DeepBook's deployed package.
+[dependencies]
+
+[addresses]
+kova = "0x0"

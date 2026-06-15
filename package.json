@@ -1,0 +1,11 @@
+{
+  "name": "kova-protocol",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Native intent & solver settlement layer for Sui",
+  "workspaces": [
+    "sdk",
+    "solver",
+    "frontend"
+  ]
+}
