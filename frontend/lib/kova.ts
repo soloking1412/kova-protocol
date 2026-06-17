@@ -10,6 +10,9 @@ export const isConfigured = kovaConfig.packageId !== '0x0';
 /** Shared SolverRegistry object id; required for the self-service staking flow. */
 export const registryId = process.env.NEXT_PUBLIC_KOVA_REGISTRY_ID ?? '';
 
+/** Live solver health endpoint (Render). */
+export const solverUrl = process.env.NEXT_PUBLIC_SOLVER_URL ?? '';
+
 export function parseUnits(value: string, decimals: number): bigint {
   const [whole, frac = ''] = value.trim().split('.');
   const fracPadded = (frac + '0'.repeat(decimals)).slice(0, decimals);

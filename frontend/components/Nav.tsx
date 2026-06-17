@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ConnectButton } from '@mysten/dapp-kit';
+import { SolverStatusBadge } from './SolverStatus';
 
 const links = [
   { href: '/', label: 'Swap' },
@@ -34,7 +35,10 @@ export function Nav() {
             ))}
           </nav>
         </div>
-        <ConnectButton />
+        <div className="flex items-center gap-3">
+          <SolverStatusBadge />
+          <ConnectButton />
+        </div>
       </div>
     </header>
   );
