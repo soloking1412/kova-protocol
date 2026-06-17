@@ -117,11 +117,6 @@ export function SolverStatusCard() {
         </div>
       )}
 
-      {!isLoading && !online && (
-        <p className="mt-3 text-sm text-zinc-500">
-          The solver bot may be spinning up — Render free tier cold-starts in ~30s.
-        </p>
-      )}
     </div>
   );
 }
