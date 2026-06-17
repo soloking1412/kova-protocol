@@ -87,7 +87,10 @@ function short(type: string): string {
 function startHealthServer(): void {
   const port = Number(process.env.PORT ?? 8080);
   createServer((_req, res) => {
-    res.writeHead(200, { 'content-type': 'application/json' });
+    res.writeHead(200, {
+      'content-type': 'application/json',
+      'access-control-allow-origin': '*',
+    });
     res.end(
       JSON.stringify({
         status: 'online',
